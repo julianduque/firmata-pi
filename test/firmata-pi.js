@@ -1,5 +1,5 @@
 var FirmataPi = require('../firmata-pi');
-var Parser = require('../midi-parser');
+var Parser = require('midi-parser');
 var sinon = require('sinon');
 
 module.exports['Report Versions On Startup'] = function (test) {

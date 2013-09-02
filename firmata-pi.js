@@ -1,4 +1,4 @@
-var Parser = require('./midi-parser');
+var Parser = require('midi-parser');
 var util = require('util');
 var Duplex = require('stream').Duplex;
 

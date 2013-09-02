@@ -26,5 +26,8 @@
     "nodeunit": "~0.8.1",
     "firmata": "~0.2.9",
     "sinon": "~1.7.3"
+  },
+  "dependencies": {
+    "midi-parser": "0.0.1"
   }
 }
