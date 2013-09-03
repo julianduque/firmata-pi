@@ -18,10 +18,10 @@ util.inherits(FirmataPi, Duplex);
 module.exports.Parser = Parser;
 
 var msg = FirmataPi.msg = {
-  REPORT_FIRMWARE: 121, //0x79
+  REPORT_FIRMWARE: 0x79,
   FIRMWARE_MAJOR: 0,
   FIRMWARE_MINOR: 1,
-  REPORT_VERSION: 249, //0xF9
+  REPORT_VERSION: 0xF9,
   FIRMATA_VERSION_MAJOR: 2,
   FIRMATA_VERSION_MINOR: 3
 };
@@ -48,13 +48,13 @@ FirmataPi.prototype.emitFirmataVersion = function () {
 FirmataPi.prototype.emitFirmwareVersion = function () {
   var packet = [
     new Buffer([
-      msg.START_SYSEX,
+      msg.startSysex,
       msg.REPORT_FIRMWARE,
       msg.FIRMWARE_MAJOR,
       msg.FIRMWARE_MINOR,
     ]),
     Parser.encodeString("FirmataPi"),
-    new Buffer([msg.END_SYSEX])
+    new Buffer([msg.endSysex])
   ];
   this.push(Buffer.concat(packet));
 };
