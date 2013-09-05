@@ -33,6 +33,11 @@ describe['callbacks'] = {
 
   setUp: function (cb) {
     this.firmata = new FirmataParser();
+    this.firmata.writeSysEx = function (data) {
+      this.write([msg.startSysex]);
+      this.write(data);
+      this.write([msg.endSysex]);
+    };
     cb();
   },
 
@@ -63,11 +68,8 @@ describe['callbacks'] = {
     this.firmata.on('digitalMessage', spy);
     var pin = 2;
     var value = 245;
-    var packet = Buffer.concat([
-      Buffer([msg.digitalMessage + pin]),
-      Parser.encodeValue([value])
-    ]);
-    this.firmata.write(packet);
+    this.firmata.write([msg.digitalMessage + pin]);
+    this.firmata.write(Parser.encodeValue([value]));
     test.ok(spy.calledWith(pin, value));
     test.done();
   },
@@ -113,7 +115,7 @@ describe['callbacks'] = {
   reportFirmware: function (test) {
     var spy = sinon.spy();
     this.firmata.on('reportFirmware', spy);
-    this.firmata.write([msg.startSysex, msg.reportFirmware, msg.endSysex]);
+    this.firmata.writeSysEx([msg.reportFirmware]);
     test.equal(spy.callCount, 1);
     test.done();
   },
@@ -126,6 +128,14 @@ describe['callbacks'] = {
     this.firmata.write(Parser.encodeString(message));
     this.firmata.write([msg.endSysex]);
     test.ok(spy.calledWith(message));
+    test.done();
+  },
+
+  capabilityQuery: function (test) {
+    var spy = sinon.spy();
+    this.firmata.on('capabilityQuery', spy);
+    this.firmata.writeSysEx([msg.capabilityQuery]);
+    test.equal(spy.callCount, 1);
     test.done();
   }
 };

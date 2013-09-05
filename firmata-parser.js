@@ -27,6 +27,7 @@ var msg = FirmataParser.msg = {
   startSysex: 0xF0, // 240
   endSysex: 0xF7, // 247
   systemReset: 0xFF, //255
+  capabilityQuery: 0x6B, // SYSEX 107
   stringData: 0x71, // SYSEX 113
   reportFirmware: 0x79, // SYSEX 121
 };
@@ -87,6 +88,10 @@ callbacks[msg.reportFirmware] = function () {
 
 callbacks[msg.stringData] = function (data) {
   this.emit('stringData', Parser.decodeString(data));
+};
+
+callbacks[msg.capabilityQuery] = function () {
+  this.emit('capabilityQuery');
 };
 
 // static methods
