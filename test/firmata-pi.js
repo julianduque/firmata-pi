@@ -1,11 +1,11 @@
 var sinon = require('sinon');
 var FirmataPi = require('../firmata-pi');
-var Parser = require('midi-parser');
-var msg = FirmataPi.msg;
 
-module.exports['Report Versions On Startup'] = function (test) {
-  var firmata = sinon.spy(FirmataPi.prototype, 'emitFirmataVersion');
-  var firmware = sinon.spy(FirmataPi.prototype, 'emitFirmwareVersion');
+var describe = module.exports;
+
+describe['Report Versions On Startup'] = function (test) {
+  var firmata = sinon.spy(FirmataPi.prototype, 'firmataVersion');
+  var firmware = sinon.spy(FirmataPi.prototype, 'firmwareVersion');
 
   var board = new FirmataPi();
 
@@ -17,32 +17,34 @@ module.exports['Report Versions On Startup'] = function (test) {
   test.done();
 };
 
+// Callbacks also called during startup
+describe['reportVersion, firmataVersion'] = function (test) {
+  var spy = sinon.spy(FirmataPi.prototype, 'firmataVersion');
+  var board = new FirmataPi();
+  board.firmata.emit('reportVersion');
+  test.ok(spy.calledTwice); // once on startup once now
+  spy.restore();
+  test.done();
+};
 
-// from the standard firmata tests
-// void processMessage(const byte* message, size_t length)
-// {
-//   FakeStream stream;
-//   Firmata.begin(stream);
+describe['reportFirmware, firmwareVersion'] = function (test) {
+  var spy = sinon.spy(FirmataPi.prototype, 'firmwareVersion');
+  var board = new FirmataPi();
+  board.firmata.emit('reportFirmware');
+  test.ok(spy.calledTwice); // once on startup once now
+  spy.restore();
+  test.done();
+};
 
-//   for (size_t i = 0; i < length; i++)
-//   {
-//     stream.nextByte(message[i]);
-//     Firmata.processInput();
-//   }
-// }
-
-// byte _digitalPort;
-// int _digitalPortValue;
-// void writeToDigitalPort(byte port, int value)
-// {
-//   _digitalPort = port;
-//   _digitalPortValue = value;
-// }
-
-// void setupDigitalPort() {
-//   _digitalPort = 0;
-//   _digitalPortValue = 0;
-// }
+// Callbacks for normal operations
+describe['capabilityQuery, capabilityResponse'] = function (test) {
+  var spy = sinon.spy(FirmataPi.prototype, 'capabilityResponse');
+  var board = new FirmataPi();
+  board.firmata.emit('capabilityQuery');
+  test.ok(spy.calledOnce);
+  spy.restore();
+  test.done();
+};
 
 // test(processWriteDigital_0)
 // {

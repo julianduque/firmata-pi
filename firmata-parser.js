@@ -116,3 +116,12 @@ FirmataParser.firmwareVersion = function () {
   ];
   return Buffer.concat(packet);
 };
+
+FirmataParser.capabilityResponse = function (pins) {
+  return Buffer([
+    msg.startSysex,
+    msg.capabilityResponse,
+    99, // bogus
+    msg.endSysex
+  ]);
+};
