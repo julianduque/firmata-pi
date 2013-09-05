@@ -18,6 +18,7 @@ module.exports['Report Versions On Startup'] = function (test) {
 };
 
 
+// from the standard firmata tests
 // void processMessage(const byte* message, size_t length)
 // {
 //   FakeStream stream;

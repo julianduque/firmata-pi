@@ -8,28 +8,65 @@ var FirmataParser = module.exports = function () {
   }
   events.EventEmitter.call(this);
   this.parser = new Parser();
+  this.bindEvents();
 };
 
 util.inherits(FirmataParser, events.EventEmitter);
-
-FirmataParser.prototype.write = function (data) {
-  this.parser.write(data);
-};
 
 var msg = FirmataParser.msg = {
   reportFirmware: 0x79,
   firmwareVersionMajor: 0,
   firmwareVersionMinor: 1,
-  REPORT_VERSION: 0xF9,
+  reportVersion: 0xF9,
   FIRMATA_VERSION_MAJOR: 2,
-  FIRMATA_VERSION_MINOR: 3
+  FIRMATA_VERSION_MINOR: 3,
+  digitalMessage: 0x90, // 144
+  analogMessage: 0xE0, // 224
+  setPinMode: 0xF4, // 244
+  startSysex: 0xF0, // 240
+  endSysex: 0xF7 // 247
 };
 
-util._extend(msg, Parser.msg);
+var midiCallbacks = {};
 
+FirmataParser.prototype.write = function (data) {
+  this.parser.write(data);
+};
+
+FirmataParser.prototype.bindEvents = function (data) {
+  this.parser.on('midi', function (cmd, channel, data) {
+    if (midiCallbacks[cmd]) {
+      midiCallbacks[cmd].call(this, channel, data);
+    }
+  }.bind(this));
+
+  this.parser.on('sysex', function (cmd, data) {
+
+  }.bind(this));
+};
+
+// callbacks
+
+midiCallbacks[msg.reportVersion] = function () {
+  this.emit('reportVersion');
+};
+
+midiCallbacks[msg.analogMessage] = function (pin, data) {
+  this.emit('analogMessage', pin, Parser.decodeValue(data)[0]);
+};
+
+midiCallbacks[msg.digitalMessage] = function (pin, data) {
+  this.emit('digitalMessage', pin, Parser.decodeValue(data)[0]);
+};
+
+midiCallbacks[msg.setPinMode] = function (meh, data) {
+  this.emit('setPinMode', data[0], data[1]);
+};
+
+// static methods
 FirmataParser.firmataVersion = function () {
   return new Buffer([
-    msg.REPORT_VERSION,
+    msg.reportVersion,
     msg.FIRMATA_VERSION_MAJOR,
     msg.FIRMATA_VERSION_MINOR
   ]);

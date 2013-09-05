@@ -28,6 +28,6 @@
     "sinon": "~1.7.3"
   },
   "dependencies": {
-    "midi-parser": "0.0.x"
+    "midi-parser": "0.1.x"
   }
 }
