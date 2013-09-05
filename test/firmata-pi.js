@@ -1,6 +1,6 @@
+var sinon = require('sinon');
 var FirmataPi = require('../firmata-pi');
 var Parser = require('midi-parser');
-var sinon = require('sinon');
 var msg = FirmataPi.msg;
 
 module.exports['Report Versions On Startup'] = function (test) {
@@ -17,39 +17,6 @@ module.exports['Report Versions On Startup'] = function (test) {
   test.done();
 };
 
-module.exports['emitFirmataVersion'] = function (test) {
-  var board = new FirmataPi();
-  board.read(); // clear the read queue
-  test.equal(board.read(), null); // ensure it's clear
-
-  board.emitFirmataVersion();
-  var version = board.read();
-  test.deepEqual(version, Buffer([249, 2, 3]), 'Firmata Version 2.3');
-  test.done();
-};
-
-module.exports['emitFirmwareVersion'] = function (test) {
-  var board = new FirmataPi();
-  board.read(); // clear the read queue
-  test.equal(board.read(), null); // ensure it's clear
-
-  board.emitFirmwareVersion();
-  var data = board.read();
-
-  var expected = Buffer([
-    msg.reportFirmware,
-    msg.firmwareVersionMajor,
-    msg.firmwareVersionMinor
-  ]);
-
-  // ignore the first byte sysex start
-  test.deepEqual(data.slice(1, 4), expected, 'Firmware Version 0.1');
-
-  // ignore the last byte sysex end
-  var name = Parser.decodeString(data.slice(4, -1));
-  test.equal(name, "firmata-pi", "Firmware Name");
-  test.done();
-};
 
 // void processMessage(const byte* message, size_t length)
 // {
