@@ -29,6 +29,91 @@ describe['.firmwareVersion'] = function (test) {
   test.done();
 };
 
+describe['.capabilityResponse'] = {
+  all: function (test) {
+    var pins = [{
+      digital: true,
+      analog: true,
+      pwm: true,
+      servo: true,
+      ic2: true
+    }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinInput, 1, msg.pinOutput, 1, // digital in and out
+      msg.pinAnalog, 10, // analog
+      msg.pinPwm, 8,
+      msg.pinServo, 14,
+      msg.pinIC2, 1,
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  },
+
+  digital: function (test) {
+    var pins = [{ digital: true }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinInput, 1, msg.pinOutput, 1, // digital in and out
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  },
+
+  analog: function (test) {
+    var pins = [{ analog: true }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinAnalog, 10,
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  },
+
+  pwm: function (test) {
+    var pins = [{ pwm: true }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinPwm, 8,
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  },
+
+  servo: function (test) {
+    var pins = [{ servo: true }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinServo, 14,
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  },
+
+  ic2: function (test) {
+    var pins = [{ ic2: true }];
+    var data = FirmataParser.capabilityResponse(pins);
+    var expected = Buffer([
+      msg.capabilityResponse,
+      msg.pinIC2, 1,
+      127 // end
+    ]);
+    test.deepEqual(data.slice(1, -1), expected);
+    test.done();
+  }
+
+};
+
 describe['callbacks'] = {
 
   setUp: function (cb) {

@@ -28,8 +28,16 @@ var msg = FirmataParser.msg = {
   endSysex: 0xF7, // 247
   systemReset: 0xFF, //255
   capabilityQuery: 0x6B, // SYSEX 107
+  capabilityResponse: 0x6C, // SYSEX 108
   stringData: 0x71, // SYSEX 113
   reportFirmware: 0x79, // SYSEX 121
+  pinInput: 0x00, // Const 0
+  pinOutput: 0x01, // Const 1
+  pinAnalog: 0x02, // Const 2
+  pinPwm: 0x03, // Const 3
+  pinServo: 0x04,
+  pinShift: 0x05,
+  pinIC2: 0x06
 };
 
 var callbacks = {};
@@ -118,10 +126,48 @@ FirmataParser.firmwareVersion = function () {
 };
 
 FirmataParser.capabilityResponse = function (pins) {
-  return Buffer([
-    msg.startSysex,
-    msg.capabilityResponse,
-    99, // bogus
-    msg.endSysex
-  ]);
+  var packet = [
+    Buffer([
+      msg.startSysex,
+      msg.capabilityResponse
+    ])
+  ];
+
+  function addMode(mode, resolution) {
+    packet.push(Buffer([mode, resolution]));
+  }
+
+  pins.forEach(function (pin) {
+    if (pin.digital) {
+      addMode(msg.pinInput, 1);
+      addMode(msg.pinOutput, 1);
+    }
+
+    if (pin.analog) {
+      // 10 refers to the pin resolution, I have no idea what this should be
+      // copied from standard firmata, probably should be on the pin obj
+      addMode(msg.pinAnalog, 10);
+    }
+
+    if (pin.pwm) {
+      // 8 is also blindly copied from arduino
+      addMode(msg.pinPwm, 8);
+    }
+
+    if (pin.servo) {
+      // 14 is another magic number
+      addMode(msg.pinServo, 14);
+    }
+
+    if (pin.ic2) {
+      // even the firmata source says 1 is made up for ic2
+      addMode(msg.pinIC2, 1);
+    }
+
+    packet.push(new Buffer([127]));
+  });
+
+  packet.push(Buffer([msg.endSysex]));
+
+  return Buffer.concat(packet);
 };

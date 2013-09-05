@@ -2,7 +2,6 @@ var Firmata = require('./firmata-parser');
 var util = require('util');
 var Duplex = require('stream').Duplex;
 
-
 // Lets pretend to be standard firmata!
 var FirmataPi = module.exports = function (opt) {
   if (!(this instanceof FirmataPi)) {
@@ -10,7 +9,7 @@ var FirmataPi = module.exports = function (opt) {
   }
   Duplex.call(this, opt);
   this.firmata = new Firmata();
-
+  this.pins = []; // No pins yet =)
   this.firmataVersion();
   this.firmwareVersion();
 
@@ -44,6 +43,5 @@ FirmataPi.prototype.firmwareVersion = function () {
 };
 
 FirmataPi.prototype.capabilityResponse = function () {
-  var pins = {};
-  this.push(Firmata.capabilityResponse(pins));
+  this.push(Firmata.capabilityResponse(this.pins));
 };
