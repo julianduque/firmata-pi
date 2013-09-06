@@ -37,7 +37,7 @@ var msg = FirmataParser.msg = {
   pinPwm: 0x03, // Const 3
   pinServo: 0x04,
   pinShift: 0x05,
-  pinIC2: 0x06
+  pinI2C: 0x06
 };
 
 var callbacks = {};
@@ -159,9 +159,9 @@ FirmataParser.capabilityResponse = function (pins) {
       addMode(msg.pinServo, 14);
     }
 
-    if (pin.ic2) {
-      // even the firmata source says 1 is made up for ic2
-      addMode(msg.pinIC2, 1);
+    if (pin.i2c) {
+      // even the firmata source says 1 is made up for i2c
+      addMode(msg.pinI2C, 1);
     }
 
     packet.push(new Buffer([127]));

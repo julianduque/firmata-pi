@@ -36,7 +36,7 @@ describe['.capabilityResponse'] = {
       analog: true,
       pwm: true,
       servo: true,
-      ic2: true
+      i2c: true
     }];
     var data = FirmataParser.capabilityResponse(pins);
     var expected = Buffer([
@@ -45,7 +45,7 @@ describe['.capabilityResponse'] = {
       msg.pinAnalog, 10, // analog
       msg.pinPwm, 8,
       msg.pinServo, 14,
-      msg.pinIC2, 1,
+      msg.pinI2C, 1,
       127 // end
     ]);
     test.deepEqual(data.slice(1, -1), expected);
@@ -100,12 +100,12 @@ describe['.capabilityResponse'] = {
     test.done();
   },
 
-  ic2: function (test) {
-    var pins = [{ ic2: true }];
+  i2c: function (test) {
+    var pins = [{ i2c: true }];
     var data = FirmataParser.capabilityResponse(pins);
     var expected = Buffer([
       msg.capabilityResponse,
-      msg.pinIC2, 1,
+      msg.pinI2C, 1,
       127 // end
     ]);
     test.deepEqual(data.slice(1, -1), expected);
